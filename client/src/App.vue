@@ -46,7 +46,7 @@ h1 {
   font-weight: bold;
   font-size: 44px;
   display: block;
-  margin-top: 40px;
+  margin-top: -10px;
   width: 360px;
   line-height: 1.2;
 }
@@ -56,12 +56,12 @@ li {
 }
 
 .item-wrapper{
-  margin-top: 42px;
+  margin-top: 46px;
   margin-left: 240px;
   display: grid;
   grid-template-columns: 210px 210px 210px;
   grid-column-gap: 36px;
-  grid-row-gap: 30px;
+  grid-row-gap: 24px;
 }
 
 .item {
