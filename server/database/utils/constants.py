@@ -1,0 +1,1 @@
+IMAGE_ID_MAX_LEN = 100
