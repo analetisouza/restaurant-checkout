@@ -1,8 +1,10 @@
 import json
-from database.models.models import Base, Category, Item
+
 from sqlalchemy import create_engine
-from sqlalchemy.sql import select
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.sql import select
+
+from database.models.models import Base, Category, Item
 
 engine = create_engine("postgresql+psycopg2://myuser:mypassword@0.0.0.0:5432/restaurant_checkout")
 Base.metadata.create_all(engine)
@@ -24,12 +26,10 @@ def app():
         items.append(Item(id=item['id'], name=item['name'], price=item['price'], image_id=item['image_id'],
                           category_id=item['category_id']))
 
-    """"
     with Session() as session:
         session.add_all(categories)
         session.add_all(items)
         session.commit()
-    """
 
     with engine.connect() as conn:
         stmt = select(Category)
