@@ -1,9 +1,27 @@
+from datetime import datetime
+
 import uvicorn
 from fastapi import FastAPI
+from pydantic import BaseModel
 from sqlalchemy.sql import select, delete, and_
 
-from common.utils import db_utils
-from database.models.models import Category, Item, CartItem, Cart
+from src.common.utils import db_utils
+from database.models.models import Category, Item, CartItem, Cart, Payment, Order
+
+
+class PaymentModel(BaseModel):
+    card_type: str
+    card_number: int
+    expiration_month: int
+    expiration_year: int
+    security_code: int
+
+
+class OrderModel(BaseModel):
+    cart_id: int
+    payment_id: int
+    status: str
+
 
 app = FastAPI()
 engine, session = db_utils.connect_to_db()
@@ -27,9 +45,10 @@ def get_items(category_filter: str):
 
 @app.post("/cart")
 def create_cart():
-    cart = Cart()
-    session.add(cart)
-    return cart.id
+    new_cart = Cart()
+    session.add(new_cart)
+    session.commit()
+    return new_cart.id
 
 
 @app.get("cart/")
@@ -46,6 +65,7 @@ def update_cart_item(item_id: int, quantity: int, cart_id: int):
         if len(result) == 0:
             new_cart_item = CartItem(item_id=item_id, quantity=quantity, cart_id=cart_id)
             session.add(new_cart_item)
+            session.commit()
         else:
             result.update(quantity=quantity)
 
@@ -57,5 +77,24 @@ def delete_cart_item(cart_id: int, item_id: int):
         conn.execute(stmt)
 
 
+@app.post("/payment")
+def create_payment(payment: PaymentModel):
+    new_payment = Payment(card_type=payment.card_type, card_number=payment.card_number,
+                      expiration_month=payment.expiration_month, expiration_year=payment.expiration_year,
+                      security_code=payment.security_code)
+    session.add(new_payment)
+    session.commit()
+    return new_payment.id
+
+
+@app.post("/order")
+def create_order(order: OrderModel):
+    new_order = Order(cart_id=order.cart_id, payment_id=order.payment_id, status=order.status,
+                      created_at=datetime.now())
+    session.add(new_order)
+    session.commit()
+    return new_order.id
+
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("src.service:app", host="0.0.0.0", port=8000, reload=True)

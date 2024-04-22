@@ -51,11 +51,10 @@ class Cart(Base):
     __tablename__ = "cart"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[str] = mapped_column(String())
     cart_items: Mapped[List["CartItem"]] = relationship()
 
     def __repr__(self) -> str:
-        return f"Cart(id={self.id!r}, user_id={self.user_id!r}, cart_items={self.cart_items!r})"
+        return f"Cart(id={self.id!r}, cart_items={self.cart_items!r})"
 
 
 class Order(Base):
