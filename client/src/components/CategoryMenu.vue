@@ -1,22 +1,13 @@
 <script setup lang="ts">
+import type { Ref } from 'vue';
+
 const props = defineProps<{
-    categories: Record<string, any>[]
+    categoryMenuStore: ReturnType<ReturnType<Ref<Record<string, boolean>>>>
 }>()
 
-import { createCategoryMenuStore }  from '@/stores/categoryMenu';
-
-const categoriesList: Record<string, boolean> = {"All": true};
-for (const category of props.categories){
-    categoriesList[category.name] = false;
-}
-
-const useCategoryMenuStore = createCategoryMenuStore(categoriesList);
-const categoryMenuStore = useCategoryMenuStore();
-
-
 function checkCategoryMenuState(newState: string) {
-    for (const category in categoryMenuStore.categoryMenuState) 
-        categoryMenuStore.categoryMenuState[category] = newState === category ? true : false;
+    for (const category in props.categoryMenuStore.categoryMenuState) 
+        props.categoryMenuStore.categoryMenuState[category] = newState === category ? true : false;
     }  
 
 </script>
@@ -24,7 +15,7 @@ function checkCategoryMenuState(newState: string) {
 <template>
     <div class="category-menu">
         <h3>Categories</h3>
-        <li v-for="state, category in categoryMenuStore.categoryMenuState" :key="category">
+        <li v-for="state, category in props.categoryMenuStore.categoryMenuState" :key="category">
             <button @click="checkCategoryMenuState(category)" :class="{active: state}">{{ category }}</button>
         </li>
     </div>

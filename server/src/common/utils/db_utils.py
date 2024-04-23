@@ -24,7 +24,7 @@ def fetch_all_from_db(engine: Engine, stmt: Select) -> str:
     """
     with engine.connect() as conn:
         result = conn.execute(stmt).fetchall()
-        return json.dumps([tuple(row) for row in result])
+        return json.dumps([print(row) for row in result])
 
 
 def fetch_one_by_id(engine: Engine, entity: Base, entity_id: int) -> str:
@@ -35,4 +35,4 @@ def fetch_one_by_id(engine: Engine, entity: Base, entity_id: int) -> str:
     with engine.connect() as conn:
         stmt = select(entity).filter(entity.id == entity_id)
         result = conn.execute(stmt).fetchone()
-        return json.dumps(tuple(result))
+        return json.dumps(dict(result))
