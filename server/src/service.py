@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.sql import select, update, delete, and_
@@ -25,13 +25,23 @@ class OrderModel(BaseModel):
 
 
 app = FastAPI()
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+
+@app.get("/")
+def home():
+    return {"message": "Connected to server successfully"}
+
+
+origins = ["http://localhost:5173", ]
+app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["*"], allow_headers=["*"],
+                   allow_credentials=True, expose_headers=["*"])
 
 engine, session = db_utils.connect_to_db()
 
 
 @app.get("/categories/")
-def get_categories():
+def get_categories(request: Request):
+    print(request.headers)
     result = session.query(Category).all()
     return [row.to_dict() for row in result]
 
@@ -55,8 +65,9 @@ def create_cart():
 
 @app.get("/cart/{cart_id}/")
 def get_cart(cart_id: int):
-    result = (session.query(CartItem.quantity, Item.name.label("item_name"), Item.image_id, Item.price,
-                            Category.name.label("category_name")).filter(CartItem.cart_id == cart_id)
+    result = (session.query(CartItem.quantity, Item.id.label("item_id"), Item.name.label("item_name"),
+                            Item.image_id, Item.price, Category.name.label("category_name"))
+              .filter(CartItem.cart_id == cart_id)
               .join(Item, CartItem.item_id == Item.id).join(Category, Item.category_id == Category.id)
               .order_by(CartItem.id)
               .all())
@@ -88,16 +99,15 @@ def update_cart_item(item_id: int, operation: str, cart_id: int):
 
 @app.delete("/cart/{cart_id}/")
 def delete_cart_item(cart_id: int, item_id: int):
-    with engine.connect() as conn:
-        stmt = delete(CartItem).filter(and_(CartItem.cart_id == cart_id, CartItem.item_id == item_id))
-        conn.execute(stmt)
+    session.query(CartItem).filter(and_(CartItem.cart_id == cart_id, CartItem.item_id == item_id)).delete()
+    session.commit()
 
 
 @app.post("/payment/")
-def create_payment(payment: PaymentModel):
-    new_payment = Payment(card_type=payment.card_type, card_number=payment.card_number,
-                          expiration_month=payment.expiration_month, expiration_year=payment.expiration_year,
-                          security_code=payment.security_code)
+def create_payment(card_type: str, card_number: str, expiration_month: str, expiration_year: str, security_code: str):
+    new_payment = Payment(card_type=card_type, card_number=card_number,
+                          expiration_month=expiration_month, expiration_year=expiration_year,
+                          security_code=security_code)
     session.add(new_payment)
     session.commit()
     return new_payment.id

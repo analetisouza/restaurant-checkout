@@ -2,7 +2,34 @@
 const props = defineProps<{
   unitPrice: number
   quantity: number
+  item_id: number
+  cart_item_id: number
+  add_cart_item: number
+  remove_cart_item: number
+  delete_cart_item: number
 }>()
+
+const emit = defineEmits<{
+  (e: 'update:cart_item_id', value: number): void
+  (e: 'update:add_cart_item', value: number): void
+  (e: 'update:remove_cart_item', value: number): void
+  (e: 'update:delete_cart_item', value: number):void
+}>();
+
+const newCartItem = () => {
+  emit('update:cart_item_id', props.item_id);
+  emit('update:add_cart_item', props.add_cart_item + 1);
+}
+
+const removeCartItem = () => {
+  emit('update:cart_item_id', props.item_id);
+  emit('update:remove_cart_item', props.remove_cart_item + 1);
+}
+
+const deleteCartItem = () => {
+  emit('update:cart_item_id', props.item_id);
+  emit('update:delete_cart_item', props.delete_cart_item + 1);
+}
 </script>
 
 <template>
@@ -23,10 +50,11 @@ const props = defineProps<{
       </h3>      
     </div> 
     <div class="cart-item-buttons">
-        <button class="cart-add">+</button>
+        <button class="cart-delete" @click="deleteCartItem">x</button>
+        <button class="cart-remove" @click="removeCartItem">-</button>
         <input type="text" class="cart-quantity" readonly="true" disabled="true" :value="quantity" />
-        <button class="cart-remove">-</button>
-        <button class="cart-delete">x</button>
+        <button class="cart-add" @click="newCartItem">+</button>
+       
     </div>   
   </div>
 </template>

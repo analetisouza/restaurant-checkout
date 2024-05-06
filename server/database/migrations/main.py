@@ -4,13 +4,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.sql import select
 
-from database.models.models import Base, Category, Item
+from ..models.models import Base, Category, Item
 
-engine = create_engine("postgresql+psycopg2://myuser:mypassword@0.0.0.0:5432/restaurant_checkout")
+engine = create_engine("postgresql+psycopg2://myuser:mypassword@172.17.0.2:5432/restaurant_checkout")
 Base.metadata.create_all(engine)
 Session = scoped_session(sessionmaker(bind=engine))
 
-file = open("../data/menu.json")
+file = open("./database/data/menu.json")
 
 data = json.load(file)
 
@@ -33,6 +33,8 @@ def app():
 
     with engine.connect() as conn:
         stmt = select(Category)
+        print(conn.execute(stmt).fetchall())
+        stmt = select(Item)
         print(conn.execute(stmt).fetchall())
 
 

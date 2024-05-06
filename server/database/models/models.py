@@ -77,10 +77,10 @@ class Payment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     card_type: Mapped[str] = mapped_column(String())
-    card_number: Mapped[int] = mapped_column()
-    expiration_month: Mapped[int] = mapped_column()
-    expiration_year: Mapped[int] = mapped_column()
-    security_code: Mapped[int] = mapped_column()
+    card_number: Mapped[str] = mapped_column(String())
+    expiration_month: Mapped[str] = mapped_column(String())
+    expiration_year: Mapped[str] = mapped_column(String())
+    security_code: Mapped[str] = mapped_column(String())
 
     def __repr__(self) -> str:
         return f"Payment(id={self.id!r}, card_type={self.card_type!r}, card_number={self.card_number!r}, \
