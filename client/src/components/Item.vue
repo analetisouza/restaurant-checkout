@@ -1,3 +1,23 @@
+<script setup lang="ts">
+
+const props = defineProps<{
+  item_id: number
+  cart_item_id: number
+  add_cart_item: number
+}>();
+
+const emit = defineEmits<{
+  (e: 'update:cart_item_id', value: number): void
+  (e: 'update:add_cart_item', value: number): void
+}>();
+
+const newCartItem = () => {
+  emit('update:cart_item_id', props.item_id);
+  emit('update:add_cart_item', props.add_cart_item + 1);
+}
+
+</script>
+
 <template>
     <div class="item">
       <i>
@@ -11,7 +31,7 @@
           <slot name="price"></slot>
         </h3>
       </div>   
-        <img class="cart-icon" src="./images/add-cart.png"/>
+        <img class="cart-icon" src="./icons/add-cart.png" @click="newCartItem"/>
     </div>
   </template>
 
@@ -44,6 +64,7 @@ h4 {
   border-radius: 5px;
   box-shadow: 1px 2px 2px #e0e0e0;
 }
+
 
 .cart-icon:hover{
   background-color: #A7EEA2;
