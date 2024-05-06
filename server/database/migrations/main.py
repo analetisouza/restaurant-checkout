@@ -4,13 +4,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.sql import select
 
-from ..models.models import Base, Category, Item
+from models.models import Base, Category, Item
 
-engine = create_engine("postgresql+psycopg2://myuser:mypassword@172.17.0.2:5432/restaurant_checkout")
+engine = create_engine(
+    "postgresql+psycopg2://myuser:mypassword@restaurant-checkout-postgres-1:5432/restaurant_checkout")
 Base.metadata.create_all(engine)
 Session = scoped_session(sessionmaker(bind=engine))
 
-file = open("./database/data/menu.json")
+file = open("./data/menu.json")
 
 data = json.load(file)
 

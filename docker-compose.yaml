@@ -1,10 +1,39 @@
-version: '3'
+version: '3.9'
 
 services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: restaurant_checkout
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "localhost", "-U", "myuser", "-d", "restaurant_checkout"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  database-init:
+    build:
+      context: ./server/database
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   server:
     build: 
       context: ./server
       dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - server_images:/app/database/data/images
+    depends_on:
+      database-init:
+        condition: service_completed_successfully
 
   client:
     build: 
@@ -12,3 +41,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
+    volumes:
+      - server_images:/app/src/views/img
+    depends_on:
+      - server
+
+volumes:
+  server_images:

@@ -24,7 +24,7 @@ function getDayPeriod(): string {
 }
 
 function getImage(image_id: string): string {
-  return new URL(`../../../server/database/data/images/${image_id}.jpg`, import.meta.url).href
+  return new URL(`./img/${image_id}.jpg`, import.meta.url).href
 }
 
 const categoriesList: Record<string, boolean> = { All: true }
@@ -50,7 +50,7 @@ watch(
       if (categoryMenuStore.categoryMenuState[category] === true) {
         try {
           items.value = await axios
-            .get(`http://127.0.0.1:8000/items/?category_filter=${category}`)
+            .get(`http://localhost:8000/items/?category_filter=${category}`)
             .then((res) => res.data)
         } catch (error) {
           console.log(error)
@@ -65,15 +65,15 @@ watch(
   add_cart_item,
   async () => {
     if (cart_id.value === 0) {
-      cart_id.value = await axios.post('http://127.0.0.1:8000/cart/').then((res) => res.data)
+      cart_id.value = await axios.post('http://localhost:8000/cart/').then((res) => res.data)
     } else {
       await axios
         .put(
-          `http://127.0.0.1:8000/cart/${cart_id.value}/?operation=add&item_id=${cart_item_id.value}`
+          `http://localhost:8000/cart/${cart_id.value}/?operation=add&item_id=${cart_item_id.value}`
         )
         .then((res) => res.data)
       cart.value = await axios
-        .get(`http://127.0.0.1:8000/cart/${cart_id.value}/`)
+        .get(`http://localhost:8000/cart/${cart_id.value}/`)
         .then((res) => res.data)
     }
   },
@@ -83,21 +83,21 @@ watch(
 watch(remove_cart_item, async () => {
   await axios
     .put(
-      `http://127.0.0.1:8000/cart/${cart_id.value}/?operation=remove&item_id=${cart_item_id.value}`
+      `http://localhost:8000/cart/${cart_id.value}/?operation=remove&item_id=${cart_item_id.value}`
     )
     .then((res) => res.data)
   cart.value = await axios
-    .get(`http://127.0.0.1:8000/cart/${cart_id.value}/`)
+    .get(`http://localhost:8000/cart/${cart_id.value}/`)
     .then((res) => res.data)
   cart_item_id.value = 0
 })
 
 watch(delete_cart_item, async () => {
   await axios
-    .delete(`http://127.0.0.1:8000/cart/${cart_id.value}/?item_id=${cart_item_id.value}`)
+    .delete(`http://localhost:8000/cart/${cart_id.value}/?item_id=${cart_item_id.value}`)
     .then((res) => res.data)
   cart.value = await axios
-    .get(`http://127.0.0.1:8000/cart/${cart_id.value}/`)
+    .get(`http://localhost:8000/cart/${cart_id.value}/`)
     .then((res) => res.data)
   cart_item_id.value = 0
 })
@@ -119,7 +119,7 @@ const gotoPayment = () =>
 </script>
 
 <script async lang="ts">
-const categories = await axios.get('http://127.0.0.1:8000/categories/').then((res) => res.data)
+const categories = await axios.get('http://localhost:8000/categories/').then((res) => res.data)
 </script>
 
 <template>

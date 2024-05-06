@@ -40,11 +40,11 @@ const submitOrder = async () => {
   const paymentId = ref(0)
   paymentId.value = await axios
     .post(
-      `http://127.0.0.1:8000/payment/?card_type=${cardType.value}&card_number=${cardNumber.value}&expiration_month=${expirationMonth.value}&expiration_year=${expirationYear.value}&security_code=${securityCode.value}`
+      `http://localhost:8000/payment/?card_type=${cardType.value}&card_number=${cardNumber.value}&expiration_month=${expirationMonth.value}&expiration_year=${expirationYear.value}&security_code=${securityCode.value}`
     )
     .then((res) => res.data)
   console.log(paymentId.value)
-  //response = await axios.post(`http://127.0.0.1:8000/cart/?cart_id=${route.params.cartId}&payment_id=${paymentId.value}&status=payed`).then((res) => res);
+  //response = await axios.post(`http://localhost:8000/cart/?cart_id=${route.params.cartId}&payment_id=${paymentId.value}&status=payed`).then((res) => res);
   router.push({ name: 'home' })
 }
 </script>

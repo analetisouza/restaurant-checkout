@@ -40,8 +40,7 @@ engine, session = db_utils.connect_to_db()
 
 
 @app.get("/categories/")
-def get_categories(request: Request):
-    print(request.headers)
+def get_categories():
     result = session.query(Category).all()
     return [row.to_dict() for row in result]
 
